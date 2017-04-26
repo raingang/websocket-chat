@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv = 'Content-Type' content = 'text/html; charset = utf-8' />
+    <script>
+    onload = function(){
+        var fullchat = '';
+        var ws = new WebSocket('ws://localhost:8080');
+        document.forms.push.onsubmit = function(){
+            ws.send(this.message.value);
+            return false;
+        };
+        ws.onmessage = function(event){
+            var message = JSON.parse(event.data);
+            var text = '';
+            switch (message.type) {
+                    //новые подключения
+                case 'info': {
+                    text = message.message;
+                    break;
+                    
+                }
+                    // новые сообщения
+                    case 'message': {
+                    text = message.author + ': ' +message.message;
+                    break;
+                    
+                }
+                    //приветствие
+                    default: {
+                    alert(message.message);
+                    break;
+                    
+                }
+                                }
+            //новый блок
+            var messageElem = document.createElement('div');
+            //текстовый узел
+            messageElem.appendChild(document.createTextNode(text));
+            //добавляем блок с текстовым узлом в сабскрайб
+            document.getElementById('subscribe').appendChild(messageElem);
+        };
+        
+    }
+    
+    </script>
+    
+    </head>
+    <body>
+        <form name = "push">
+        <input type = "hidden" name = "userID"/>
+         <input type = "text" name = "message"/>
+            <input type = "submit" value = "Send"/>
+        </form>
+        <div id = "subscribe">
+        
+        </div>
+    </body>
+
+</html>
